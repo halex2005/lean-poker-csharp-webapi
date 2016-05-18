@@ -9,10 +9,10 @@ You should have installed dnvm to continue with this project.
 
 To restore nuget packages, run
 
-    dnu restore
+    dotnet restore
 
 To run site under kestrel web server, run
 
-    dnx web
+    dotnet run
 
 
