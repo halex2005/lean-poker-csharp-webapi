@@ -2,6 +2,7 @@
 using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using lean_poker_csharp_webapi;
+using Microsoft.Extensions.Hosting;
 
 namespace ConsoleApplication
 {
@@ -11,15 +12,17 @@ namespace ConsoleApplication
         {
             Console.WriteLine(Directory.GetCurrentDirectory());
             Console.WriteLine(AppContext.BaseDirectory);
-            var host = new WebHostBuilder()
-                .UseKestrel()
-                .UseIISIntegration()
-                .UseStartup<Startup>()
-                .UseWebRoot("wwwroot")
-                .UseContentRoot(Directory.GetCurrentDirectory())
-                .Build();
+            CreateHostBuilder(args).Build().Run();
+        }
 
-            host.Run();
+        private static IHostBuilder CreateHostBuilder(string[] args)
+        {
+            return Host
+                .CreateDefaultBuilder(args)
+                .ConfigureWebHostDefaults(webBuilder =>
+                {
+                    webBuilder.UseStartup<Startup>();
+                });
         }
     }
 }

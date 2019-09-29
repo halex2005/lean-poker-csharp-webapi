@@ -7,12 +7,20 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using LeanPoker;
+using Microsoft.Extensions.Logging;
 
 namespace LeanPoker.Controllers
 {
     [Route("/")]
     public class PlayerServiceController : Controller
     {
+        private readonly ILogger<PlayerServiceController> logger;
+
+        public PlayerServiceController(ILogger<PlayerServiceController> logger)
+        {
+            this.logger = logger;
+        }
+        
         // GET: /
         [HttpGet]
         public FileContentResult Get()
@@ -24,6 +32,7 @@ namespace LeanPoker.Controllers
         [HttpPost]
         public FileContentResult Post(string game_state)
         {
+            logger.LogInformation("POST game state={0}", game_state);
             string action = Request.Form["action"];
             if (string.IsNullOrEmpty(action))
                 action = Request.Query["action"];

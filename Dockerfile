@@ -1,11 +1,17 @@
-FROM microsoft/aspnet:1.0.0-rc1-update1
+FROM mcr.microsoft.com/dotnet/core/sdk:3.0 AS build
+WORKDIR .
 
-RUN printf "deb http://ftp.us.debian.org/debian jessie main\n" >> /etc/apt/sources.list
-RUN apt-get -qq update && apt-get install -qqy sqlite3 libsqlite3-dev && rm -rf /var/lib/apt/lists/*
+# copy csproj and restore as distinct layers
+COPY *.sln .
+COPY *.csproj .
+RUN dotnet restore
 
-COPY . /app
+# copy everything else and build app
+COPY . ./app/
 WORKDIR /app
-RUN ["dnu", "restore"]
+RUN dotnet publish -c Release -o out
 
-EXPOSE 5000/tcp
-ENTRYPOINT ["dnx", "-p", "project.json", "web"]
+FROM mcr.microsoft.com/dotnet/core/aspnet:3.0.0-alpine AS runtime
+WORKDIR /app
+COPY --from=build /app/out ./
+ENTRYPOINT ["dotnet", "lean-poker-csharp-webapi.dll"]
